@@ -79,7 +79,7 @@ class DbServices {
   // Read Product Data
   Future<QuerySnapshot> fetchProducts() {
     return _firestore
-        .collection('shop_products').get();
+        .collection('shop_products').orderBy('name').get();
   }
 
   //Search product by product id
