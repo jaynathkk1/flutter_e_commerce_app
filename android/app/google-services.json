@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "903046968774",
+    "firebase_url": "https://jrmessanger-f374d-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "jrmessanger-f374d",
+    "storage_bucket": "jrmessanger-f374d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:903046968774:android:20b251b238fa3253ce2ec7",
+        "android_client_info": {
+          "package_name": "com.example.e_commerce_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "903046968774-d0kpi790aj5jbip0hcd30v63ir8bd73g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATm9dRMMkICUerpaq3bqan0sLgRSLWbZc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "903046968774-d0kpi790aj5jbip0hcd30v63ir8bd73g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:903046968774:android:28cd9559baf2c27fce2ec7",
+        "android_client_info": {
+          "package_name": "com.example.epic"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "903046968774-d0kpi790aj5jbip0hcd30v63ir8bd73g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATm9dRMMkICUerpaq3bqan0sLgRSLWbZc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "903046968774-d0kpi790aj5jbip0hcd30v63ir8bd73g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:903046968774:android:5e0073ddc56e2c2bce2ec7",
+        "android_client_info": {
+          "package_name": "com.example.food_delivery"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "903046968774-d0kpi790aj5jbip0hcd30v63ir8bd73g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATm9dRMMkICUerpaq3bqan0sLgRSLWbZc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "903046968774-d0kpi790aj5jbip0hcd30v63ir8bd73g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
