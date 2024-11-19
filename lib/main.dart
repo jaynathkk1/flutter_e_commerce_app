@@ -8,7 +8,7 @@ import 'package:e_commerce_app/views/discount_page.dart';
 import 'package:e_commerce_app/views/home_nav.dart';
 import 'package:e_commerce_app/views/login_page.dart';
 import 'package:e_commerce_app/views/order_page.dart';
-import 'package:e_commerce_app/views/search_page.dart';
+import 'package:e_commerce_app/views/search_ui.dart';
 import 'package:e_commerce_app/views/sign_up.dart';
 import 'package:e_commerce_app/views/specific_products.dart';
 import 'package:e_commerce_app/views/update_profile.dart';
@@ -64,8 +64,7 @@ class MyApp extends StatelessWidget {
           "/order":(context)=>const OrdersPage(),
           "/view_order":(context)=>const ViewOrder(),
           "/complete":(context)=>const CompleteOrder(),
-          "/search":(context)=>const SearchPage(),
-          "/show_product":(context)=>const ShowProduct()
+          "/search":(context)=> ProductSearchScreen(),
         },
       ),
     );

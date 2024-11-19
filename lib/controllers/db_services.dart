@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/cart_model.dart';
+import '../models/product.dart';
 
 class DbServices {
   final _firestore = FirebaseFirestore.instance;
@@ -68,7 +69,12 @@ class DbServices {
         .orderBy('priority', descending: true)
         .snapshots();
   }
-
+// Get all categories from Firestore
+  Stream<List<String>> getCategories() {
+    return _firestore.collection('shop_categories').snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => doc['name'] as String).toList();
+    });
+  }
   // Read Product Data
   Stream<QuerySnapshot> readProducts(String category) {
     return _firestore
@@ -81,7 +87,11 @@ class DbServices {
     return _firestore
         .collection('shop_products').orderBy('name').get();
   }
-
+// Get all products from Firestore
+  Stream<List<Product>> getProducts() {
+    return _firestore.collection('shop_products').snapshots().map((snapshot) =>
+        snapshot.docs.map((doc) => Product.fromFirestore(doc.data())).toList());
+  }
   //Search product by product id
   Stream<QuerySnapshot> searchProducts(List<String> docIds) {
     return _firestore

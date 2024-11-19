@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 
 import '../constants/discount_constant.dart';
 import '../models/cart_model.dart';
-import '../models/product_model.dart';
 import '../providers/cart_provider.dart';
 import 'cart_page.dart';
 
@@ -85,9 +84,9 @@ class _SearchPageState extends State<SearchPage> {
                   itemBuilder: (context,index){
                     final product = _resultList[index];
                 return GestureDetector(
-                 /* onTap: () => Navigator.pushNamed(
+                  onTap: () => Navigator.pushNamed(
                       context, "/view_product",
-                      arguments: _resultList[index]),*/
+                      arguments: _resultList[index]),
                   child: ListTile(
                     leading: SizedBox(
                       height: 80,
@@ -96,7 +95,7 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                     title: Text(product['name'],maxLines: 2,),
                     subtitle: Text(_resultList[index]['category']),
-                    trailing: Text("₹ ${_resultList[index]['new_price'].toString()}",style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold),),
+                    trailing: Text("₹ ${_resultList[index]['new_price'].toString()}",style: const TextStyle(color: Colors.green,fontWeight: FontWeight.bold),),
                   ),
                 );
               }),
@@ -120,7 +119,8 @@ class _SearchPageState extends State<SearchPage> {
 }
 
 class ShowProduct extends StatefulWidget {
-  const ShowProduct({super.key});
+  final String productId;
+  const ShowProduct({super.key, required this.productId});
 
   @override
   State<ShowProduct> createState() => _ShowProductState();
@@ -130,7 +130,7 @@ class _ShowProductState extends State<ShowProduct> {
   @override
   Widget build(BuildContext context) {
     final arguments =
-    ModalRoute.of(context)!.settings.arguments as ProductsModel;
+    ModalRoute.of(context)!.settings.arguments as Map<String,dynamic>;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Product Details'),
@@ -159,7 +159,7 @@ class _ShowProductState extends State<ShowProduct> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CachedNetworkImage(
-              imageUrl: arguments.image,
+              imageUrl: arguments['image'],
               height: 300,
               width: double.infinity,
               fit: BoxFit.contain,
@@ -170,7 +170,7 @@ class _ShowProductState extends State<ShowProduct> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    arguments.name,
+                    arguments['name'],
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontSize: 25),
@@ -178,7 +178,7 @@ class _ShowProductState extends State<ShowProduct> {
                   Row(
                     children: [
                       Text(
-                        "₹ ${arguments.old_price}",
+                        "₹ ${arguments['old_price']}",
                         style: TextStyle(
                             fontSize: 18,
                             color: Colors.grey.shade700,
@@ -189,7 +189,7 @@ class _ShowProductState extends State<ShowProduct> {
                         width: 15,
                       ),
                       Text(
-                        "₹ ${arguments.new_price}",
+                        "₹ ${arguments['new_price']}",
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
@@ -201,22 +201,22 @@ class _ShowProductState extends State<ShowProduct> {
                         color: Colors.green,
                       ),
                       Text(
-                        "${discountPercent(arguments.old_price, arguments.new_price)} %",
+                        "${discountPercent(arguments['old_price'], arguments['new_price'])} %",
                         style: const TextStyle(fontSize: 20, color: Colors.green),
                       )
                     ],
                   ),
-                  arguments.maxQuantity == 0
+                  arguments['maxQuantity'] == 0
                       ? const Text(
                     "Out of Stock",
                     style: TextStyle(color: Colors.red),
                   )
                       : Text(
-                    "Only ${arguments.maxQuantity} left in stock",
+                    "Only ${arguments['maxQuantity']} left in stock",
                     style: const TextStyle(color: Colors.green),
                   ),
                   Text(
-                    arguments.description,
+                    arguments['description'],
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -228,7 +228,7 @@ class _ShowProductState extends State<ShowProduct> {
           ],
         ),
       ),
-      bottomNavigationBar: arguments.maxQuantity!=0?Row(
+      bottomNavigationBar: arguments['maxQuantity']!=0?Row(
         children: [
           SizedBox(
             height: 60,
@@ -237,8 +237,8 @@ class _ShowProductState extends State<ShowProduct> {
               onPressed: () {
                 Provider.of<CartProvider>(context, listen: false).addToCart(
                     CartModel(
-                        productId: arguments.id,
-                        quantity: arguments.maxQuantity));
+                        productId: arguments['id'],
+                        quantity: arguments['maxQuantity']));
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     backgroundColor: Colors.green,
                     content: Text('Add Item To Cart Successfully!')));
@@ -260,7 +260,7 @@ class _ShowProductState extends State<ShowProduct> {
               onPressed: () {
                 Provider.of<CartProvider>(context, listen: false).addToCart(
                     CartModel(
-                        productId: arguments.id,
+                        productId: arguments['id'],
                         quantity: 1));
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     backgroundColor: Colors.green,
