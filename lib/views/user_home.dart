@@ -1,4 +1,3 @@
-import 'package:e_commerce_app/constants/search_container.dart';
 import 'package:e_commerce_app/containers/Categories_container.dart';
 import 'package:e_commerce_app/containers/discount_container.dart';
 import 'package:e_commerce_app/containers/home_page_maker_container.dart';
@@ -21,7 +20,7 @@ class _UserHomeState extends State<UserHome> {
         actions: [
           IconButton(onPressed: (){
            Navigator.pushNamed(context, "/search");
-          }, icon: Icon(Icons.search_outlined))
+          }, icon: const Icon(Icons.search_outlined))
         ],
       ),
       body: const SingleChildScrollView(

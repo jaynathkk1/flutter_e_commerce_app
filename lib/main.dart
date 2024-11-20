@@ -1,5 +1,6 @@
 import 'package:e_commerce_app/controllers/auth_services.dart';
 import 'package:e_commerce_app/firebase_options.dart';
+import 'package:e_commerce_app/providers/product_provider.dart';
 import 'package:e_commerce_app/views/cart_page.dart';
 import 'package:e_commerce_app/providers/cart_provider.dart';
 import 'package:e_commerce_app/providers/user_provider.dart';
@@ -8,6 +9,7 @@ import 'package:e_commerce_app/views/discount_page.dart';
 import 'package:e_commerce_app/views/home_nav.dart';
 import 'package:e_commerce_app/views/login_page.dart';
 import 'package:e_commerce_app/views/order_page.dart';
+import 'package:e_commerce_app/views/product_search_page.dart';
 import 'package:e_commerce_app/views/search_ui.dart';
 import 'package:e_commerce_app/views/sign_up.dart';
 import 'package:e_commerce_app/views/specific_products.dart';
@@ -30,7 +32,8 @@ void main() async {
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context)=>UserProvider(),),
-    ChangeNotifierProvider(create: (context)=>CartProvider(),)
+    ChangeNotifierProvider(create: (context)=>CartProvider(),),
+    ChangeNotifierProvider(create: (context)=>ProductProvider())
   ],
       child: const MyApp()));
 }
@@ -65,6 +68,7 @@ class MyApp extends StatelessWidget {
           "/view_order":(context)=>const ViewOrder(),
           "/complete":(context)=>const CompleteOrder(),
           "/search":(context)=> ProductSearchScreen(),
+          "/product_search":(context)=>ProductSearchPage()
         },
       ),
     );

@@ -29,4 +29,17 @@ class Product {
         category: doc['category'] ?? '',
         maxQuantity: doc['maxQuantity'] ?? 0);
   }
+  // Convert Product instance to Map (for serialization)
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'image': image,
+      'description': description,
+      'old_price': oldPrice,
+      'new_price': newPrice,
+      'category': category,
+      'maxQuantity': maxQuantity,
+    };
+  }
 }
