@@ -8,7 +8,9 @@ import 'package:e_commerce_app/pdf/api/pdf_api.dart';
 import 'package:e_commerce_app/pdf/model/customer.dart';
 import 'package:e_commerce_app/pdf/model/invoice.dart';
 import 'package:e_commerce_app/pdf/model/supplier.dart';
+import 'package:e_commerce_app/providers/cart_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../pdf/api/pdf_invoice_api.dart';
 
@@ -144,65 +146,69 @@ class _ViewOrderState extends State<ViewOrder> {
         title: const Text("Order Summary"),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              // Delivery Details
-              buildDeliveryDetails(args),
-              //Products Details
-              buildProductsDetails(args),
-              buildPaymentSummary(args),
-              args.status == "PAID" || args.status == "ON_THE_WAY"
-                  ? SizedBox(
-                      height: 60,
-                      width: MediaQuery.of(context).size.width * .9,
-                      child: ElevatedButton(
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return ModifyOrder(
-                                    order: args,
-                                  );
-                                });
-                          },
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              foregroundColor: Colors.white),
-                          child: const Text('Modify Order')))
-                  : args.status == "DELIVERED"
+        child: Consumer<CartProvider>(
+          builder: (context,value,child) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  // Delivery Details
+                  buildDeliveryDetails(args),
+                  //Products Details
+                  buildProductsDetails(args),
+                  buildPaymentSummary(args),
+                  args.status == "PAID" || args.status == "ON_THE_WAY"
                       ? SizedBox(
                           height: 60,
                           width: MediaQuery.of(context).size.width * .9,
                           child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green,
-                                  foregroundColor: Colors.white),
-                              onPressed: () async{
-                                final date=DateTime.now();
-                                final dueDate=date.add(const Duration(days: 7));
-                                final invoice = Invoice(
-                                    customer: Customer(args.name, args.address),
-                                    supplier: Supplier(name: "Supplier", address: 'Supplier Address', paymentInfo: 'paymentInfo'),
-                                    info: InvoiceInfo(description: 'description', number: '${DateTime.now().year}-9999', date: date, dueDate: dueDate),
-
-                                    items:args.products.map((product)=>InvoiceItem(
-                                        description: product.name.substring(0,15),
-                                        date: date, quantity: product.quantity,
-                                        vat: args.discount,
-                                        unitPrice: product.singlePrice.toDouble())).toList(),
-                                  order: args
-                                );
-                                final pdfFile= await PdfInvoiceApi.generate(invoice);
-                                PdfApi.openFile(pdfFile);
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return ModifyOrder(
+                                        order: args,
+                                      );
+                                    });
                               },
-                              child: const Text('Invoice PDF')),
-                        )
-                      : const SizedBox()
-            ],
-          ),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  foregroundColor: Colors.white),
+                              child: const Text('Modify Order')))
+                      : args.status == "DELIVERED"
+                          ? SizedBox(
+                              height: 60,
+                              width: MediaQuery.of(context).size.width * .9,
+                              child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.green,
+                                      foregroundColor: Colors.white),
+                                  onPressed: () async{
+                                    final date=DateTime.now();
+                                    final dueDate=date.add(const Duration(days: 7));
+                                    final invoice = Invoice(
+                                        customer: Customer(args.name, args.address),
+                                        supplier: Supplier(name: "Supplier", address: 'Supplier Address', paymentInfo: 'paymentInfo'),
+                                        info: InvoiceInfo(description: 'description', number: '${DateTime.now().year}-9999', date: date, dueDate: dueDate),
+
+                                        items:args.products.map((product)=>InvoiceItem(
+                                            description: product.name.substring(0,15),
+                                            date: date, quantity: product.quantity,
+                                            vat: args.discount,
+                                            unitPrice: product.singlePrice.toDouble())).toList(),
+                                      order: args
+                                    );
+                                    final pdfFile= await PdfInvoiceApi.generate(invoice);
+                                    PdfApi.openFile(pdfFile);
+                                  },
+                                  child: const Text('Invoice PDF')),
+                            )
+                          : const SizedBox()
+                ],
+              ),
+            );
+          }
         ),
       ),
     );

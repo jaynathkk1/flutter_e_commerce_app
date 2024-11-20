@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:e_commerce_app/constants/discount_constant.dart';
 import 'package:e_commerce_app/pdf/api/pdf_api.dart';
 import 'package:e_commerce_app/pdf/model/customer.dart';
 import 'package:e_commerce_app/pdf/model/supplier.dart';
@@ -140,13 +141,13 @@ class PdfInvoiceApi{
       'Total'
     ];
     final data = invoice.items.map((item){
-      final total=item.unitPrice *item.quantity*(1+item.vat);
+      final total=item.unitPrice *item.quantity;
       return [
         item.description,
         Utils.formatDate(item.date),
         '${item.quantity}',
-        "\₹ ${item.unitPrice}",
-        '\$ ${total.toStringAsFixed(2)}',
+        " ${item.unitPrice}",
+        ' ${total.toStringAsFixed(2)}',
       ];
     }).toList();
     
@@ -171,9 +172,9 @@ class PdfInvoiceApi{
     final netTotal = invoice.items
         .map((item) => item.unitPrice * item.quantity)
         .reduce((item1, item2) => item1 + item2);
-    final vatPercent = invoice.items.first.vat;
-    final vat = netTotal * vatPercent;
-    final total = netTotal + vat;
+    final vat = invoice.order.discount ;
+    final total = netTotal-vat;
+    final perDis=discountPercent(netTotal.toInt(), total.toInt());
     return Container(
       alignment: Alignment.centerRight,
       child: Row(
@@ -191,7 +192,12 @@ class PdfInvoiceApi{
                   ),
                   buildText(
                     title: 'Total Discount: ',
-                    value: Utils.formatPrice(vat.toDouble()),
+                    value: "-${Utils.formatPrice(vat.toDouble())}",
+                    unite: true,
+                  ),
+                  buildText(
+                    title: 'Discount Percentage: ',
+                    value: "${perDis}%",
                     unite: true,
                   ),
                   Divider(),
@@ -201,9 +207,10 @@ class PdfInvoiceApi{
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
-                    value: Utils.formatPrice(total),
+                    value: '${total}',
                     unite: true,
                   ),
+                  Text('All values are in INR'),
                   SizedBox(height: 2 * PdfPageFormat.mm),
                   Container(height: 1, color: PdfColors.grey400),
                   SizedBox(height: 0.5 * PdfPageFormat.mm),
