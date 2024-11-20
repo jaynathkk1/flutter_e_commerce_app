@@ -70,7 +70,7 @@ class PdfInvoiceApi{
     children: [
       Text(customer.name),
       Text(customer.address)
-      
+
     ]
   );
 
@@ -137,7 +137,6 @@ class PdfInvoiceApi{
       'Date',
       'Quantity',
       'Unit Price',
-      'VAT',
       'Total'
     ];
     final data = invoice.items.map((item){
@@ -147,7 +146,6 @@ class PdfInvoiceApi{
         Utils.formatDate(item.date),
         '${item.quantity}',
         "\₹ ${item.unitPrice}",
-        '${item.vat} %',
         '\$ ${total.toStringAsFixed(2)}',
       ];
     }).toList();
@@ -165,7 +163,6 @@ class PdfInvoiceApi{
         2: Alignment.centerRight,
         3: Alignment.centerRight,
         4: Alignment.centerRight,
-        5: Alignment.centerRight,
       },
     );
   }
@@ -188,13 +185,13 @@ class PdfInvoiceApi{
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   buildText(
-                    title: 'Net total',
+                    title: 'Net total:',
                     value: Utils.formatPrice(netTotal),
                     unite: true,
                   ),
                   buildText(
-                    title: 'Vat ${vatPercent * 100} %',
-                    value: Utils.formatPrice(vat),
+                    title: 'Total Discount: ',
+                    value: Utils.formatPrice(vat.toDouble()),
                     unite: true,
                   ),
                   Divider(),

@@ -53,6 +53,7 @@ class _ViewProductState extends State<ViewProduct> {
               width: double.infinity,
               fit: BoxFit.contain,
             ),
+            // Product Summary
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(

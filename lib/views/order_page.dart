@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:e_commerce_app/constants/discount_constant.dart';
 import 'package:e_commerce_app/containers/additional_confirm.dart';
 import 'package:e_commerce_app/controllers/db_services.dart';
 import 'package:e_commerce_app/models/orders_model.dart';
+import 'package:e_commerce_app/models/product_model.dart';
 import 'package:e_commerce_app/pdf/api/pdf_api.dart';
 import 'package:e_commerce_app/pdf/model/customer.dart';
 import 'package:e_commerce_app/pdf/model/invoice.dart';
@@ -146,99 +148,12 @@ class _ViewOrderState extends State<ViewOrder> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  'Delivery Details',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                ),
-              ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.grey.shade100,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Order Id: ${args.id}'),
-                    Text(
-                        'Order on: ${DateTime.fromMillisecondsSinceEpoch(args.createdAt).toString()}'),
-                    Text('Order By: ${args.name}'),
-                    Text('Order Id: ${args.email}'),
-                    Text('Phone No: ${args.phone}'),
-                    Text('Delivery Address: ${args.address}'),
-                  ],
-                ),
-              ),
+            children: <Widget>[
+              // Delivery Details
+              buildDeliveryDetails(args),
               //Products Details
-              Column(
-                children: args.products
-                    .map((e) => Container(
-                          width: double.infinity,
-                          margin: const EdgeInsets.all(12),
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                      height: 50,
-                                      width: 50,
-                                      padding: const EdgeInsets.all(4),
-                                      child: CachedNetworkImage(
-                                          imageUrl: e.image)),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Expanded(child: Text(e.name))
-                                ],
-                              ),
-                              Text(
-                                "₹${e.singlePrice.toString()} x ${e.quantity.toString()} Quantity",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w500),
-                              ),
-                              Text(
-                                "₹${e.totalPrice.toString()}",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 20),
-                              )
-                            ],
-                          ),
-                        ))
-                    .toList(),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  args.discount == 0
-                      ? const SizedBox()
-                      : Text(
-                          "Discount: -₹${args.discount}",
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20),
-                        ),
-                  Text(
-                    "Status: ${args.status}",
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 20),
-                  ),
-                  Text(
-                    "Total Price: ₹${args.total}",
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 20),
-                  )
-                ],
-              ),
+              buildProductsDetails(args),
+              buildPaymentSummary(args),
               args.status == "PAID" || args.status == "ON_THE_WAY"
                   ? SizedBox(
                       height: 60,
@@ -273,36 +188,11 @@ class _ViewOrderState extends State<ViewOrder> {
                                     supplier: Supplier(name: "Supplier", address: 'Supplier Address', paymentInfo: 'paymentInfo'),
                                     info: InvoiceInfo(description: 'description', number: '${DateTime.now().year}-9999', date: date, dueDate: dueDate),
 
-                                    items: [
-                                      InvoiceItem(
-                                      description: "Description",
-                                      date: DateTime.now(),
-                                      quantity: 3,
-                                      unitPrice: 399,
-                                      vat: 4
-                                    ),
-                                      InvoiceItem(
-                                          description: "Description",
-                                          date: DateTime.now(),
-                                          quantity: 3,
-                                          unitPrice: 399,
-                                          vat: 4
-                                      ),
-                                      InvoiceItem(
-                                          description: "Description",
-                                          date: DateTime.now(),
-                                          quantity: 3,
-                                          unitPrice: 399,
-                                          vat: 4
-                                      ),
-                                      InvoiceItem(
-                                          description: "Description",
-                                          date: DateTime.now(),
-                                          quantity: 3,
-                                          unitPrice: 399,
-                                          vat: 4
-                                      )
-                                    ],
+                                    items:args.products.map((product)=>InvoiceItem(
+                                        description: product.name.substring(0,15),
+                                        date: date, quantity: product.quantity,
+                                        vat: args.discount,
+                                        unitPrice: product.singlePrice.toDouble())).toList(),
                                   order: args
                                 );
                                 final pdfFile= await PdfInvoiceApi.generate(invoice);
@@ -315,6 +205,110 @@ class _ViewOrderState extends State<ViewOrder> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildPaymentSummary(OrdersModel args) {
+    return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                args.discount == 0
+                    ? const SizedBox()
+                    : Text(
+                        "Discount: -₹${args.discount}",
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                Text(
+                  "Status: ${args.status}",
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 20),
+                ),
+                Text(
+                  "Total Price: ₹${args.total}",
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 20),
+                )
+              ],
+            );
+  }
+
+  Widget buildProductsDetails(OrdersModel args) {
+    return Column(
+              children: args.products
+                  .map((e) => Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                    height: 50,
+                                    width: 50,
+                                    padding: const EdgeInsets.all(4),
+                                    child: CachedNetworkImage(
+                                        imageUrl: e.image)),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(child: Text(e.name))
+                              ],
+                            ),
+                            Text(
+                              "₹${e.singlePrice.toString()} x ${e.quantity.toString()} Quantity",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            Text(
+                              "₹${e.totalPrice.toString()}",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20),
+                            )
+                          ],
+                        ),
+                      ))
+                  .toList(),
+            );
+  }
+
+  Widget buildDeliveryDetails(OrdersModel args) {
+    return Column(
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          child: Text(
+            'Delivery Details',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          ),
+        ),
+        Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.grey.shade100,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Order Id: ${args.id}'),
+                      Text(
+                          'Order on: ${DateTime.fromMillisecondsSinceEpoch(args.createdAt).toString()}'),
+                      Text('Order By: ${args.name}'),
+                      Text('Order Id: ${args.email}'),
+                      Text('Phone No: ${args.phone}'),
+                      Text('Delivery Address: ${args.address}'),
+                    ],
+                  ),
+                ),
+      ],
     );
   }
 }
@@ -330,6 +324,7 @@ class ModifyOrder extends StatefulWidget {
 class _ModifyOrderState extends State<ModifyOrder> {
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)?.settings as OrdersModel;
     return AlertDialog(
       content: Column(
         mainAxisSize: MainAxisSize.min,

@@ -19,7 +19,7 @@ class _CartPageState extends State<CartPage> {
         actions: [
           IconButton(onPressed: (){
             Navigator.pushNamed(context, "/cart");
-          }, icon: Icon(Icons.refresh))
+          }, icon: const Icon(Icons.refresh))
         ],
       ),
       body: Consumer<CartProvider>(builder: (context,value,child){
