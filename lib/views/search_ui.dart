@@ -135,6 +135,28 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
     setState(() {
       _isListening = true;
     });
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Container(
+            height: 400,
+            width: 400,
+            color: Colors.grey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.keyboard_voice,
+                  size: 40,
+                ),
+                _searchQuery.isEmpty
+                    ? Text('Listening ....')
+                    : Text("${_searchQuery.toString()}"),
+              ],
+            ),
+          );
+        });
+    print(_searchQuery);
   }
 
   void _stopListening() {
@@ -157,7 +179,8 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
 
     // Filter by search query
     filteredProducts = filteredProducts
-        .where((product) => product.name.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .where((product) =>
+            product.name.toLowerCase().contains(_searchQuery.toLowerCase()))
         .toList();
 
     // Sort by price
@@ -173,7 +196,8 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
   // Suggestions based on the query
   List<Product> _getSuggestions() {
     return _products
-        .where((product) => product.name.toLowerCase().startsWith(_searchQuery.toLowerCase()))
+        .where((product) =>
+            product.name.toLowerCase().startsWith(_searchQuery.toLowerCase()))
         .toList();
   }
 
@@ -185,26 +209,494 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
   // Display related products
   List<Product> _getRelatedProducts() {
     return _products
-        .where((product) => product.name.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .where((product) =>
+            product.name.toLowerCase().contains(_searchQuery.toLowerCase()))
         .toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(top: 50.0),
-        child: Column(
-          children: <Widget>[
-            // Search Bar with Voice UI
-            SearchBar(context),
-            // Recent Searches Section
-            if (_recentSearches.isNotEmpty && _searchQuery.isEmpty) ...[
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Recent Searches', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              ),
+      body: SafeArea(
+          child: SingleChildScrollView(
+              child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          //Search Bar Header
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.arrow_back_ios)),
               SizedBox(
+                width: MediaQuery.of(context).size.width * 0.7,
+                child: TextField(
+                  //controller: voiceSearch,
+                  decoration: InputDecoration(
+                    labelText:
+                        _isListening ? 'Listening...' : 'Search Products',
+                    border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(40))),
+                    prefixIcon: const Icon(Icons.search),
+                  ),
+                  onChanged: (query) {
+                    setState(() {
+                      _searchQuery = query;
+                      print("Query: ${_searchQuery}");
+                      _suggestedProducts = _getSuggestions();
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              CircleAvatar(
+                child: IconButton(
+                  icon: Icon(_isListening ? Icons.mic_off : Icons.mic,
+                      color: _isListening ? Colors.red : Colors.green),
+                  onPressed: _isListening ? _stopListening : _startListening,
+                ),
+              ),
+            ],
+          ),
+          if (_searchQuery.isEmpty) ...[
+            //Recently Search
+            _recentSearches.isNotEmpty
+                ? SizedBox(
+                    height: size.height * .23,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            'Recently Searches',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20),
+                          ),
+                        ),
+                        SizedBox(
+                          height: size.height * .18,
+                          child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: _recentSearches.length,
+                              itemBuilder: (context, index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ProductDetailScreen(
+                                                    product: _recentSearches[
+                                                        index])));
+                                    _addToRecentSearches(
+                                        _recentSearches[index]);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 5.0, left: 8, right: 8),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 50,
+                                          backgroundImage:
+                                              CachedNetworkImageProvider(
+                                                  _recentSearches[index].image),
+                                        ),
+                                        SizedBox(
+                                            width: size.width * .2,
+                                            child: Text(
+                                              _recentSearches[index].name,
+                                              maxLines: 2,
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }),
+                        ),
+                      ],
+                    ),
+                  )
+                : SizedBox(),
+            //Related Search
+            SizedBox(
+              height: size.height * .245,
+              width: double.infinity,
+              //color: Colors.red,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      'Related Searches',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ),
+                  SizedBox(
+                    height: size.height * .2,
+                    width: double.infinity,
+                    child: GridView.builder(
+                      itemCount: 6,
+                      itemBuilder: (context, index) {
+                        final related = _getRelatedProducts()[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProductDetailScreen(
+                                        product: _products[index])));
+                            _addToRecentSearches(_getRelatedProducts()[index]);
+                          },
+                          child: Container(
+                            color: Colors.grey.shade400,
+                            height: size.height * .1,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: 50,
+                                  height: 50,
+                                  child: CachedNetworkImage(
+                                    imageUrl: related.image,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                SizedBox(
+                                    width: 100,
+                                    child: Text(
+                                      related.name,
+                                      maxLines: 2,
+                                    ))
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 4,
+                        crossAxisSpacing: 8,
+                        mainAxisSpacing: 6,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            //Recommended Stores for You
+            SizedBox(
+              height: size.height * .34,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      'Recommended Stores For You',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ),
+                  SizedBox(
+                    height: size.height * .28,
+                    child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 3,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ProductDetailScreen(
+                                          product: _products[index])));
+                              _addToRecentSearches(_products[index]);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 5.0, left: 8, right: 8),
+                              child: Container(
+                                width: size.width * .290,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: const Border(
+                                      right: BorderSide(width: 1),
+                                      left: BorderSide(width: 1),
+                                      top: BorderSide(width: 1),
+                                      bottom: BorderSide(width: 1),
+                                    )),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    SizedBox(
+                                        height: size.height * .22,
+                                        width: size.width * .24,
+                                        child: CachedNetworkImage(
+                                          imageUrl: _getRecommendations()[index]
+                                              .image,
+                                          fit: BoxFit.contain,
+                                        )),
+                                    SizedBox(
+                                        width: size.width * .2,
+                                        child: Text(
+                                          _getRecommendations()[index].category,
+                                          maxLines: 2,
+                                        )),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                  ),
+                ],
+              ),
+            ),
+            //Popular Products
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    'Popular  Products',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                ),
+                SizedBox(
+                  height: size.height * .9,
+                  child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              mainAxisSpacing: 20,
+                              crossAxisSpacing: 5,
+                              childAspectRatio: 0.58),
+                      itemCount: _products.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProductDetailScreen(
+                                        product: _products[index])));
+                            _addToRecentSearches(_products[index]);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                top: 5.0, left: 8, right: 8),
+                            child: Container(
+                              width: size.width * .290,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: const Border(
+                                    right: BorderSide(width: 1),
+                                    left: BorderSide(width: 1),
+                                    top: BorderSide(width: 1),
+                                    bottom: BorderSide(width: 1),
+                                  )),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                    child: SizedBox(
+                                        height: size.height * .15,
+                                        width: size.width * .24,
+                                        child: CachedNetworkImage(
+                                          imageUrl: _products[index].image,
+                                          fit: BoxFit.fill,
+                                        )),
+                                  ),
+                                  SizedBox(
+                                    height: size.height * .012,
+                                  ),
+                                  SizedBox(
+                                      width: size.width * .2,
+                                      child: Text(
+                                        _products[index].name,
+                                        maxLines: 1,
+                                      )),
+                                  SizedBox(
+                                      width: size.width * .2,
+                                      child: Text(
+                                        _products[index].category,
+                                        maxLines: 1,
+                                        style: TextStyle(color: Colors.grey),
+                                      )),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                ),
+              ],
+            ),
+          ],
+          if (_searchQuery.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.only(top: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  DropdownButton<String>(
+                    hint: const Text('Sort'),
+                    value: _sortOrder,
+                    items: const [
+                      DropdownMenuItem(
+                          value: 'low_to_high',
+                          child: Text('Price: Low to High')),
+                      DropdownMenuItem(
+                          value: 'high_to_low',
+                          child: Text('Price: High to Low')),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _sortOrder = value!;
+                      });
+                    },
+                  ),
+                  DropdownButton<String>(
+                    hint: const Text('Category'),
+                    value: _selectedCategory,
+                    items: _categories
+                        .map((category) => DropdownMenuItem(
+                            value: category, child: Text(category)))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedCategory = value!;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: size.height * .75,
+              width: double.infinity,
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.7,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                ),
+                itemCount: _sortAndFilterProducts(_products).length,
+                itemBuilder: (context, index) {
+                  final product = _sortAndFilterProducts(_products)[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ProductDetailScreen(product: product)),
+                      );
+                      _addToRecentSearches(product);
+                    },
+                    child: Card(
+                      color: Colors.grey.shade200,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                image: DecorationImage(
+                                    image: NetworkImage(product.image),
+                                    fit: BoxFit.fitHeight),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            product.name,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "₹ ${product.oldPrice}",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey.shade700,
+                                    fontWeight: FontWeight.w500,
+                                    decoration: TextDecoration.lineThrough),
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                "₹ ${product.newPrice}",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 14),
+                              ),
+                              const SizedBox(width: 5),
+                              const Icon(
+                                Icons.arrow_downward,
+                                color: Colors.green,
+                                size: 1,
+                              ),
+                              Text(
+                                "${discountPercent(product.oldPrice, product.newPrice)} %",
+                                style: const TextStyle(
+                                    fontSize: 14, color: Colors.green),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            SizedBox(
+              height: size.height * .2,
+              child: Text(
+                "Total Products: ${_sortAndFilterProducts(_products).length}",
+                textAlign: TextAlign.start,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            )
+          ]
+        ],
+      ))),
+      //bottomNavigationBar: buildTotalProducts(),
+    );
+  }
+
+  /*Widget buildRecentSearches() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text('Recent Searches', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        ),
+        SizedBox(
                 height: 100,
                 child: ListView.builder(
                     itemCount: _recentSearches.length,
@@ -228,37 +720,23 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                       );
                     })
               ),
-            ],
-            // Related Products Section
-            if (_searchQuery.isEmpty && _getRelatedProducts().isNotEmpty) ...[
-              buildRelatedSearch(),
-              buildRecommendedSearch()
-            ],
-            // Suggestions Display (if query is not empty)
-            if (_searchQuery.isNotEmpty && _suggestedProducts.isNotEmpty)...[
-              // Sort & Filter Options
-              buildSortAndFilter(),
-              //Suggestion Search
-              buildSuggest(),
-            ],
-            // Product Grid
-            buildProductCard(),
-          ],
-        ),
-      ),
-      bottomNavigationBar: SizedBox(
-        height: 50,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Text("Total Products: ${_sortAndFilterProducts(_products).length}", style: const TextStyle(fontWeight: FontWeight.bold)),
-            ),
-          ],
-        ),
-      ),
+      ],
     );
+  }
+
+  Widget buildTotalProducts() {
+    return SizedBox(
+    height: 50,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Text("Total Products: ${_sortAndFilterProducts(_products).length}", style: const TextStyle(fontWeight: FontWeight.bold)),
+        ),
+      ],
+    ),
+  );
   }
 
   Widget buildSuggest() {
@@ -351,15 +829,16 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
       decoration: BoxDecoration(
         color: Colors.grey.shade100
       ),
-      height: 265,
-      child: Stack(
+      height: 300,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
             padding: EdgeInsets.only(top: 18.0,left: 10),
             child: SizedBox(child: Text('Related Products', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
           ),
           SizedBox(
-            height: 265,
+            height: 250,
             child: GridView.builder(
               itemCount: 6,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -408,82 +887,84 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
     );
   }
 
-  Expanded buildProductCard() {
-    return Expanded(
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.7,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-              ),
-              itemCount: _sortAndFilterProducts(_products).length,
-              itemBuilder: (context, index) {
-                final product = _sortAndFilterProducts(_products)[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ProductDetailScreen(product: product)),
-                    );
-                  },
-                  child: Card(
-                    color: Colors.grey.shade200,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              image: DecorationImage(
-                                  image: NetworkImage(product.image),
-                                  fit: BoxFit.fitHeight
+  Widget buildProductCard() {
+    return Container(
+      child: Expanded(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.7,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                ),
+                itemCount: _sortAndFilterProducts(_products).length,
+                itemBuilder: (context, index) {
+                  final product = _sortAndFilterProducts(_products)[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ProductDetailScreen(product: product)),
+                      );
+                    },
+                    child: Card(
+                      color: Colors.grey.shade200,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                image: DecorationImage(
+                                    image: NetworkImage(product.image),
+                                    fit: BoxFit.fitHeight
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Text(
-                          product.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "₹ ${product.oldPrice}",
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey.shade700,
-                                  fontWeight: FontWeight.w500,
-                                  decoration: TextDecoration.lineThrough
+                          Text(
+                            product.name,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "₹ ${product.oldPrice}",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey.shade700,
+                                    fontWeight: FontWeight.w500,
+                                    decoration: TextDecoration.lineThrough
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 5),
-                            Text(
-                              "₹ ${product.newPrice}",
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                            ),
-                            const SizedBox(width: 5),
-                            const Icon(
-                              Icons.arrow_downward,
-                              color: Colors.green,
-                              size: 1,
-                            ),
-                            Text(
-                              "${discountPercent(product.oldPrice, product.newPrice)} %",
-                              style: const TextStyle(fontSize: 14, color: Colors.green),
-                            )
-                          ],
-                        ),
-                      ],
+                              const SizedBox(width: 5),
+                              Text(
+                                "₹ ${product.newPrice}",
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                              ),
+                              const SizedBox(width: 5),
+                              const Icon(
+                                Icons.arrow_downward,
+                                color: Colors.green,
+                                size: 1,
+                              ),
+                              Text(
+                                "${discountPercent(product.oldPrice, product.newPrice)} %",
+                                style: const TextStyle(fontSize: 14, color: Colors.green),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          );
+    );
   }
 
   Widget buildSortAndFilter() {
@@ -519,41 +1000,38 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
           );
   }
 
-  Widget SearchBar(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          IconButton(onPressed: () { Navigator.pop(context); }, icon: const Icon(Icons.arrow_back_ios)),
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.7,
-            child: TextField(
-              controller: voiceSearch,
-              decoration: InputDecoration(
-                labelText: _isListening ? 'Listening...' : 'Search Products',
-                border: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(40))
-                ),
-                prefixIcon: const Icon(Icons.search),
+  Widget buildSearchBar() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        IconButton(onPressed: () { Navigator.pop(context); }, icon: const Icon(Icons.arrow_back_ios)),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.7,
+          child: TextField(
+            controller: voiceSearch,
+            decoration: InputDecoration(
+              labelText: _isListening ? 'Listening...' : 'Search Products',
+              border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(40))
               ),
-              onChanged: (query) {
-                setState(() {
-                  _searchQuery = query;
-                  _suggestedProducts = _getSuggestions();
-                });
-              },
+              prefixIcon: const Icon(Icons.search),
             ),
+            onChanged: (query) {
+              setState(() {
+                _searchQuery = query;
+                _suggestedProducts = _getSuggestions();
+              });
+            },
           ),
-          const SizedBox(width: 10,),
-          CircleAvatar(
-            child: IconButton(
-              icon: Icon(_isListening ? Icons.mic_off : Icons.mic, color: _isListening ? Colors.red : Colors.green),
-              onPressed: _isListening ? _stopListening : _startListening,
-            ),
+        ),
+        const SizedBox(width: 10,),
+        CircleAvatar(
+          child: IconButton(
+            icon: Icon(_isListening ? Icons.mic_off : Icons.mic, color: _isListening ? Colors.red : Colors.green),
+            onPressed: _isListening ? _stopListening : _startListening,
           ),
-        ],
-      ),
+        ),
+      ],
     );
-  }
+  }*/
 }

@@ -74,34 +74,32 @@ class _SearchPageState extends State<SearchPage> {
           controller: _searchController,
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height*.8,
-              child: ListView.builder(
-                itemCount: _resultList.length,
-                  itemBuilder: (context,index){
-                    final product = _resultList[index];
-                return GestureDetector(
-                  onTap: () => Navigator.pushNamed(
-                      context, "/view_product",
-                      arguments: _resultList[index]),
-                  child: ListTile(
-                    leading: SizedBox(
-                      height: 80,
-                      width: 80,
-                      child: CachedNetworkImage(imageUrl: _resultList[index]['image']),
-                    ),
-                    title: Text(product['name'],maxLines: 2,),
-                    subtitle: Text(_resultList[index]['category']),
-                    trailing: Text("₹ ${_resultList[index]['new_price'].toString()}",style: const TextStyle(color: Colors.green,fontWeight: FontWeight.bold),),
+      body: Column(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height*.8,
+            child: ListView.builder(
+              itemCount: _resultList.length,
+                itemBuilder: (context,index){
+                  final product = _resultList[index];
+              return GestureDetector(
+                onTap: () => Navigator.pushNamed(
+                    context, "/view_product",
+                    arguments: _resultList[index]),
+                child: ListTile(
+                  leading: SizedBox(
+                    height: 80,
+                    width: 80,
+                    child: CachedNetworkImage(imageUrl: _resultList[index]['image']),
                   ),
-                );
-              }),
-            ),
-          ],
-        ),
+                  title: Text(product['name'],maxLines: 2,),
+                  subtitle: Text(_resultList[index]['category']),
+                  trailing: Text("₹ ${_resultList[index]['new_price'].toString()}",style: const TextStyle(color: Colors.green,fontWeight: FontWeight.bold),),
+                ),
+              );
+            }),
+          ),
+        ],
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),

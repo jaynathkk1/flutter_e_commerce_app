@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
           "/order":(context)=>const OrdersPage(),
           "/view_order":(context)=>const ViewOrder(),
           "/complete":(context)=>const CompleteOrder(),
-          "/search":(context)=> ProductSearchScreen(),
+          "/search":(context)=> const ProductSearchScreen(),
           "/product_search":(context)=>ProductSearchPage()
         },
       ),
