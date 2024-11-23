@@ -145,12 +145,12 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.keyboard_voice,
                   size: 40,
                 ),
                 _searchQuery.isEmpty
-                    ? Text('Listening ....')
+                    ? const Text('Listening ....')
                     : Text("${_searchQuery.toString()}"),
               ],
             ),
@@ -242,11 +242,15 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                     border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(40))),
                     prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchQuery.isNotEmpty?IconButton(icon: const Icon(Icons.cancel_outlined),
+                    onPressed: (){
+                      _searchQuery="";
+                    },):const SizedBox(),
                   ),
                   onChanged: (query) {
                     setState(() {
                       _searchQuery = query;
-                      print("Query: ${_searchQuery}");
+                      //print("Query: ${_searchQuery}");
                       _suggestedProducts = _getSuggestions();
                     });
                   },
@@ -264,6 +268,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
               ),
             ],
           ),
+          //Recently Search
           if (_searchQuery.isEmpty) ...[
             //Recently Search
             _recentSearches.isNotEmpty
@@ -286,6 +291,9 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                               scrollDirection: Axis.horizontal,
                               itemCount: _recentSearches.length,
                               itemBuilder: (context, index) {
+                                if(_recentSearches.isEmpty){
+                                  return const SizedBox();
+                                }
                                 return GestureDetector(
                                   onTap: () {
                                     Navigator.push(
@@ -326,7 +334,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                       ],
                     ),
                   )
-                : SizedBox(),
+                : const SizedBox(),
             //Related Search
             SizedBox(
               height: size.height * .245,
@@ -350,6 +358,9 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                       itemCount: 6,
                       itemBuilder: (context, index) {
                         final related = _getRelatedProducts()[index];
+                        if(_getRelatedProducts().isEmpty){
+                          return const SizedBox();
+                        }
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -419,6 +430,9 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                         scrollDirection: Axis.horizontal,
                         itemCount: 3,
                         itemBuilder: (context, index) {
+                          if(_products.isEmpty){
+                            return SizedBox();
+                          }
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
@@ -542,7 +556,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                                       child: Text(
                                         _products[index].category,
                                         maxLines: 1,
-                                        style: TextStyle(color: Colors.grey),
+                                        style: const TextStyle(color: Colors.grey),
                                       )),
                                 ],
                               ),
@@ -554,6 +568,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
               ],
             ),
           ],
+          // Sort and Filter
           if (_searchQuery.isNotEmpty) ...[
             Padding(
               padding: const EdgeInsets.only(top: 15),
@@ -678,7 +693,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
               child: Text(
                 "Total Products: ${_sortAndFilterProducts(_products).length}",
                 textAlign: TextAlign.start,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             )
           ]
