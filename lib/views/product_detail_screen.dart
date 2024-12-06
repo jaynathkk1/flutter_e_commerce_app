@@ -25,10 +25,10 @@ class ProductDetailScreen extends StatelessWidget {
             if (value.carts.isNotEmpty) {
               return Badge(
                 backgroundColor: Colors.green,
-                child: const Icon(Icons.shopping_cart_outlined),
                 label: Text(
                   value.carts.length.toString(),
                 ),
+                child: const Icon(Icons.shopping_cart_outlined),
               );
             }
             return const Icon(Icons.shopping_cart_outlined);
@@ -41,7 +41,7 @@ class ProductDetailScreen extends StatelessWidget {
             Image.network(product.image),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(product.name, style: TextStyle(fontSize: 24)),
+              child: Text(product.name, style: const TextStyle(fontSize: 24)),
             ),
             Padding(
               padding: const EdgeInsets.all(20.0),

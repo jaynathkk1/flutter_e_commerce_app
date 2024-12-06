@@ -39,7 +39,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
         _categories.addAll(categories);
       });
     });
-
+    // Fetch Products
     DbServices().getProducts().listen((products) {
       setState(() {
         _products = products;
@@ -213,7 +213,10 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
             product.name.toLowerCase().contains(_searchQuery.toLowerCase()))
         .toList();
   }
-
+  int min=0;
+  minCalculate(int a,int b){
+    return min=a>b?b:a;
+  }
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -289,7 +292,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                           height: size.height * .18,
                           child: ListView.builder(
                               scrollDirection: Axis.horizontal,
-                              itemCount: _recentSearches.length,
+                              itemCount: minCalculate(_recentSearches.length, 6),
                               itemBuilder: (context, index) {
                                 if(_recentSearches.isEmpty){
                                   return const SizedBox();
@@ -431,7 +434,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                         itemCount: 3,
                         itemBuilder: (context, index) {
                           if(_products.isEmpty){
-                            return SizedBox();
+                            return const SizedBox();
                           }
                           return GestureDetector(
                             onTap: () {

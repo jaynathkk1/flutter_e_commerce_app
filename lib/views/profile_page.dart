@@ -3,6 +3,8 @@ import 'package:e_commerce_app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'folder_explore.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -82,7 +84,8 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             ListTile(
               onTap: (){
-                showDialog(context: context, builder: (context){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>FolderExplorer()));
+                /*showDialog(context: context, builder: (context){
                  return AlertDialog(
                    actions:[
                      IconButton(onPressed: (){
@@ -90,7 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
                      }, icon: const Text('OK'))
                    ],content: const Text("Help & Services under Processing")
                    ,);
-                });
+                });*/
               },
               leading: const Icon(Icons.support_agent),
               title: const Text('Help & Services'),

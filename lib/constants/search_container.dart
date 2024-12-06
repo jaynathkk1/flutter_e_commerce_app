@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SearchContainer extends StatefulWidget {
@@ -46,13 +45,13 @@ class _SearchContainerState extends State<SearchContainer> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: Icon(Icons.arrow_back)),
+                    icon: const Icon(Icons.arrow_back)),
                 hintText: 'Search for Products, Brands and More',
-                hintStyle: TextStyle(color: Colors.grey),
+                hintStyle: const TextStyle(color: Colors.grey),
                 border: InputBorder.none,
                 fillColor: Colors.white,
                 filled: true,
-                contentPadding: EdgeInsets.only(bottom: 20, top: 5),
+                contentPadding: const EdgeInsets.only(bottom: 20, top: 5),
                 suffix: IconButton(
                     onPressed: () {
                       setState(() {
@@ -65,18 +64,18 @@ class _SearchContainerState extends State<SearchContainer> {
                     ))),
           ),
           _found != ""
-              ? SizedBox()
-              : Container(
+              ? const SizedBox()
+              : SizedBox(
                   height: 400,
                   child: ListView.builder(
                       scrollDirection: Axis.vertical,
                       itemCount: recent.length,
                       itemBuilder: (context, index) {
                         return ListTile(
-                          leading: Icon(Icons.refresh),
+                          leading: const Icon(Icons.refresh),
                           title: Text(recent[index]['name']),
                           trailing: IconButton(
-                              onPressed: () {}, icon: Icon(Icons.arrow_upward)),
+                              onPressed: () {}, icon: const Icon(Icons.arrow_upward)),
                         );
                       }),
                 )

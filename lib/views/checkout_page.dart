@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce_app/controllers/db_services.dart';
 import 'package:e_commerce_app/controllers/mailer_service.dart';
 import 'package:e_commerce_app/models/orders_model.dart';
-import 'package:e_commerce_app/views/order_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';

@@ -54,6 +54,11 @@ dependencies:
   path_provider: ^2.1.5
   speech_to_text: ^7.0.0
   shared_preferences: ^2.3.3
+  internet_connection_checker_plus: ^2.5.2
+  firebase_messaging: ^15.1.5
+  firebase_analytics: ^11.3.5
+  file_picker: ^8.1.4
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:

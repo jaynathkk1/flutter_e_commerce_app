@@ -12,6 +12,7 @@ class UserHome extends StatefulWidget {
 }
 
 class _UserHomeState extends State<UserHome> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +33,7 @@ class _UserHomeState extends State<UserHome> {
             HomePageMakerContainer()
           ],
         ),
-      )
+      ),
     );
   }
 }

@@ -1,9 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:e_commerce_app/constants/discount_constant.dart';
 import 'package:e_commerce_app/containers/additional_confirm.dart';
 import 'package:e_commerce_app/controllers/db_services.dart';
 import 'package:e_commerce_app/models/orders_model.dart';
-import 'package:e_commerce_app/models/product_model.dart';
 import 'package:e_commerce_app/pdf/api/pdf_api.dart';
 import 'package:e_commerce_app/pdf/model/customer.dart';
 import 'package:e_commerce_app/pdf/model/invoice.dart';

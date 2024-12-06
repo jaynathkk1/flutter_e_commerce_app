@@ -16,6 +16,7 @@ import 'package:e_commerce_app/views/specific_products.dart';
 import 'package:e_commerce_app/views/update_profile.dart';
 import 'package:e_commerce_app/views/view_product.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -24,18 +25,24 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await dotenv.load(fileName:".env");
-   Stripe.publishableKey=dotenv.env["STRIPE_PUBLIC_KEY"]!;
+  await dotenv.load(fileName: ".env");
+  Stripe.publishableKey = dotenv.env["STRIPE_PUBLIC_KEY"]!;
   Stripe.merchantIdentifier = 'merchant.flutter.stripe.test';
   Stripe.urlScheme = 'flutterstripe';
   await Stripe.instance.applySettings();
 
+  final fcmToken = await FirebaseMessaging.instance.getToken();
+  print(fcmToken);
+
   runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (context)=>UserProvider(),),
-    ChangeNotifierProvider(create: (context)=>CartProvider(),),
-    ChangeNotifierProvider(create: (context)=>ProductProvider())
-  ],
-      child: const MyApp()));
+    ChangeNotifierProvider(
+      create: (context) => UserProvider(),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => CartProvider(),
+    ),
+    ChangeNotifierProvider(create: (context) => ProductProvider())
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -59,16 +66,16 @@ class MyApp extends StatelessWidget {
           "/login": (context) => const LoginPage(),
           "/signup": (context) => const SignupPage(),
           "/update_profile": (context) => const UpdateProfile(),
-          "/discount":(context)=>const DiscountPage(),
-          "/specific":(context)=>const SpecificProducts(),
-          "/view_product":(context)=>const ViewProduct(),
-          "/cart":(context)=>const CartPage(),
-          "/checkout":(context)=>const CheckoutPage(),
-          "/order":(context)=>const OrdersPage(),
-          "/view_order":(context)=>const ViewOrder(),
-          "/complete":(context)=>const CompleteOrder(),
-          "/search":(context)=> const ProductSearchScreen(),
-          "/product_search":(context)=>ProductSearchPage()
+          "/discount": (context) => const DiscountPage(),
+          "/specific": (context) => const SpecificProducts(),
+          "/view_product": (context) => const ViewProduct(),
+          "/cart": (context) => const CartPage(),
+          "/checkout": (context) => const CheckoutPage(),
+          "/order": (context) => const OrdersPage(),
+          "/view_order": (context) => const ViewOrder(),
+          "/complete": (context) => const CompleteOrder(),
+          "/search": (context) => const ProductSearchScreen(),
+          "/product_search": (context) => ProductSearchPage()
         },
       ),
     );
@@ -85,7 +92,7 @@ class CheckUser extends StatefulWidget {
 class _CheckUserState extends State<CheckUser> {
   @override
   void initState() {
-
+    super.initState();
     AuthServices().isLoggedIn().then((value) {
       if (value) {
         Navigator.pushReplacementNamed(context, "/home");
@@ -93,7 +100,6 @@ class _CheckUserState extends State<CheckUser> {
         Navigator.pushReplacementNamed(context, "/login");
       }
     });
-    super.initState();
   }
 
   @override
