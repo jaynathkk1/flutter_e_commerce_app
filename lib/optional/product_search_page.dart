@@ -28,16 +28,13 @@ class _ProductSearchPageState extends State<ProductSearchPage> {
       appBar: AppBar(
         title: const Text('Product Search'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {},
-          ),
+          Icon(Icons.search),
         ],
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.only(top: 16.0),
             child: TextField(
               controller: _controller,
               decoration: const InputDecoration(

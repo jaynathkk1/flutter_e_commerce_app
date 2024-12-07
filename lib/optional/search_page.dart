@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../constants/discount_constant.dart';
 import '../models/cart_model.dart';
 import '../providers/cart_provider.dart';
-import 'cart_page.dart';
+import '../views/cart_page.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});

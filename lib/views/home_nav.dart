@@ -25,7 +25,7 @@ class _HomeNavState extends State<HomeNav> {
     super.initState();
     _internetConnectionSubscription =
         InternetConnection().onStatusChange.listen((event) {
-      print(event);
+     // print(event);
       switch (event) {
         case InternetStatus.connected:
           setState(() {
@@ -99,15 +99,17 @@ class _HomeNavState extends State<HomeNav> {
                 label: 'Cart'),
             const BottomNavigationBarItem(
                 icon: Icon(Icons.account_circle_outlined), label: 'Profile'),
-          ]):const ScaffoldMessenger(
-      child: Center(
+          ]):
+      const ScaffoldMessenger(
+      child: Card(
+        color: Colors.redAccent,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.wifi_off,color: Colors.red,),
+                Icon(Icons.wifi_off,color: Colors.white,),
                 SizedBox(width: 10,),
-                Text("Check your Internet Connection",style: TextStyle(fontWeight: FontWeight.bold),
+                Text("Check your Internet Connection",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),
                       ),
               ],
             ),

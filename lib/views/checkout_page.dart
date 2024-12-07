@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce_app/controllers/db_services.dart';
 import 'package:e_commerce_app/controllers/mailer_service.dart';
@@ -270,9 +272,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 }
 
-class CompleteOrder extends StatelessWidget {
+class CompleteOrder extends StatefulWidget {
   const CompleteOrder({super.key});
 
+  @override
+  State<CompleteOrder> createState() => _CompleteOrderState();
+}
+
+class _CompleteOrderState extends State<CompleteOrder> {
+  @override
+  void initState() {
+    super.initState();
+    // Delay for 3 seconds, then navigate to Order Screen
+    Timer(const Duration(seconds: 3), () {
+      Navigator.pushNamed(context, "/order");
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Container(

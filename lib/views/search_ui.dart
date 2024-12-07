@@ -10,14 +10,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/discount_constant.dart';
 import '../models/product.dart';
 
-class ProductSearchScreen extends StatefulWidget {
-  const ProductSearchScreen({super.key});
+class SearchUI extends StatefulWidget {
+  const SearchUI({super.key});
 
   @override
-  _ProductSearchScreenState createState() => _ProductSearchScreenState();
+  _SearchUIState createState() => _SearchUIState();
 }
 
-class _ProductSearchScreenState extends State<ProductSearchScreen> {
+class _SearchUIState extends State<SearchUI> {
   List<Product> _products = [];
   final List<String> _categories = ['All'];
   List<Product> _suggestedProducts = [];
@@ -33,7 +33,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
   void initState() {
     super.initState();
 
-    // Fetch categories and products
+    // Fetch categories
     DbServices().getCategories().listen((categories) {
       setState(() {
         _categories.addAll(categories);
@@ -226,50 +226,54 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
               child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
+          const SizedBox(height: 20,),
           //Search Bar Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(Icons.arrow_back_ios)),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.7,
-                child: TextField(
-                  //controller: voiceSearch,
-                  decoration: InputDecoration(
-                    labelText:
-                        _isListening ? 'Listening...' : 'Search Products',
-                    border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(40))),
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: _searchQuery.isNotEmpty?IconButton(icon: const Icon(Icons.cancel_outlined),
-                    onPressed: (){
-                      _searchQuery="";
-                    },):const SizedBox(),
+          SizedBox(
+            height: 50,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.arrow_back_ios)),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  child: TextField(
+                    //controller: voiceSearch,
+                    decoration: InputDecoration(
+                      labelText:
+                          _isListening ? 'Listening...' : 'Search Products',
+                      border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(20))),
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: _searchQuery.isNotEmpty?IconButton(icon: const Icon(Icons.cancel_outlined),
+                      onPressed: (){
+                        _searchQuery="";
+                      },):const SizedBox(),
+                    ),
+                    onChanged: (query) {
+                      setState(() {
+                        _searchQuery = query;
+                        //print("Query: ${_searchQuery}");
+                        _suggestedProducts = _getSuggestions();
+                      });
+                    },
                   ),
-                  onChanged: (query) {
-                    setState(() {
-                      _searchQuery = query;
-                      //print("Query: ${_searchQuery}");
-                      _suggestedProducts = _getSuggestions();
-                    });
-                  },
                 ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              CircleAvatar(
-                child: IconButton(
-                  icon: Icon(_isListening ? Icons.mic_off : Icons.mic,
-                      color: _isListening ? Colors.red : Colors.green),
-                  onPressed: _isListening ? _stopListening : _startListening,
+                const SizedBox(
+                  width: 10,
                 ),
-              ),
-            ],
+                CircleAvatar(
+                  child: IconButton(
+                    icon: Icon(_isListening ? Icons.mic_off : Icons.mic,
+                        color: _isListening ? Colors.red : Colors.green),
+                    onPressed: _isListening ? _stopListening : _startListening,
+                  ),
+                ),
+              ],
+            ),
           ),
           //Recently Search
           if (_searchQuery.isEmpty) ...[
