@@ -42,6 +42,5 @@ Firebase Data model
 ![Screenshot 2024-12-17 175800](https://github.com/user-attachments/assets/52efd52f-6c6a-45d1-8e6f-57e63c812c5a)
 ![Screenshot 2024-12-17 175856](https://github.com/user-attachments/assets/cbffcde1-c451-41b7-955d-03accd150abb)
 
-![Screenshot 2024-12-12 232005](https://github.com/user-attachments/assets/6b9d6eb3-82da-4645-8bc3-44ca8b4255b0)
 
 
