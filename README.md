@@ -1,4 +1,4 @@
-# e_commerce_app
+![Screenshot 2024-12-17 175856](https://github.com/user-attachments/assets/45a805f6-9015-449c-bcc8-043d2d95216a)![Screenshot 2024-12-17 175715](https://github.com/user-attachments/assets/a17a2efa-731b-448e-b710-b2b0688083bf)# e_commerce_app
 
 A new Flutter project.
 
@@ -36,5 +36,12 @@ Profile
 ![profile page](https://github.com/user-attachments/assets/adb4e7c6-0f10-4576-a51b-12519349cf9b)
 
 ![forgot password popup](https://github.com/user-attachments/assets/375c6e52-269c-4c0c-8205-dc6922395d59)
+
+Firebase Data model
+![Screenshot 2024-12-17 175715](https://github.com/user-attachments/assets/c1000e45-1ad3-4566-8687-afd77802a9ef)
+![Screenshot 2024-12-17 175800](https://github.com/user-attachments/assets/52efd52f-6c6a-45d1-8e6f-57e63c812c5a)
+![Screenshot 2024-12-17 175856](https://github.com/user-attachments/assets/cbffcde1-c451-41b7-955d-03accd150abb)
+
+![Screenshot 2024-12-12 232005](https://github.com/user-attachments/assets/6b9d6eb3-82da-4645-8bc3-44ca8b4255b0)
 
 
