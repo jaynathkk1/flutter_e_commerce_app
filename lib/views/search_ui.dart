@@ -362,7 +362,9 @@ class _SearchUIState extends State<SearchUI> {
                     height: size.height * .2,
                     width: double.infinity,
                     child: GridView.builder(
-                      itemCount: 6,
+                     itemCount: _getRelatedProducts().length,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         final related = _getRelatedProducts()[index];
                         if(_getRelatedProducts().isEmpty){
